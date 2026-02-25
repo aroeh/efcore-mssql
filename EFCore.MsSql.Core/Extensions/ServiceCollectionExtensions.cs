@@ -1,7 +1,8 @@
-﻿using EFCore.MsSql.Core.Orchestrations;
+﻿using EFCore.MSSQL.Core.Interfaces;
+using EFCore.MSSQL.Core.Orchestrations;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EFCore.MsSql.Core.Extensions;
+namespace EFCore.MSSQL.Core.Extensions;
 
 public static class ServiceCollectionExtensions
 {

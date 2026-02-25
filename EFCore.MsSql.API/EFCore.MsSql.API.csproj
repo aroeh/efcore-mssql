@@ -1,23 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EFCore.MsSql.Core\EFCore.MsSql.Core.csproj" />
-    <ProjectReference Include="..\EFCore.MsSql.Infrastructure\EFCore.MsSql.Infrastructure.csproj" />
-    <ProjectReference Include="..\EFCore.MsSql.Shared\EFCore.MsSql.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="HttpRequests\" />
+    <ProjectReference Include="..\EFCore.MSSQL.Core\EFCore.MSSQL.Core.csproj" />
+    <ProjectReference Include="..\EFCore.MSSQL.Infrastructure\EFCore.MSSQL.Infrastructure.csproj" />
+    <ProjectReference Include="..\EFCore.MSSQL.Shared\EFCore.MSSQL.Shared.csproj" />
   </ItemGroup>
 
 </Project>

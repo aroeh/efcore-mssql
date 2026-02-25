@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="EFCore.MSSQL.API/EFCore.MSSQL.API.csproj" />
+  <Project Path="EFCore.MSSQL.Core/EFCore.MSSQL.Core.csproj" />
+  <Project Path="EfCore.MSSQL.Database.Restuarant/EfCore.MSSQL.Database.Restuarant.sqlproj" Id="874aae74-d2fb-495c-b6d1-6a50abfdcceb">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="EFCore.MSSQL.Infrastructure/EFCore.MSSQL.Infrastructure.csproj" />
+  <Project Path="EFCore.MSSQL.Shared/EFCore.MSSQL.Shared.csproj" />
+</Solution>

@@ -1,203 +1,135 @@
-﻿using EFCore.MsSql.Infrastructure.Constants;
-using EFCore.MsSql.Shared.Models;
+﻿using EFCore.MSSQL.Infrastructure.Entities;
+using EFCore.MSSQL.Infrastructure.Extensions;
+using EFCore.MSSQL.Infrastructure.Interfaces;
+using EFCore.MSSQL.Shared.Models;
 using Microsoft.Extensions.Logging;
-using System.Data;
 
-namespace EFCore.MsSql.Infrastructure.Repos;
+namespace EFCore.MSSQL.Infrastructure.Repos;
 
-public class RestuarantRepo(ILogger<RestuarantRepo> log) : IRestuarantRepo
+public class RestuarantRepo
+(
+    ILogger<RestuarantRepo> log,
+    ISqlRepo<RestuarantEntity> sqlRepo
+) : IRestuarantRepo
 {
     private readonly ILogger<RestuarantRepo> _logger = log;
-
+    private readonly ISqlRepo<RestuarantEntity> _sqlRepo = sqlRepo;
 
     /// <summary>
-    /// Returns a collection of all restuarants in the database
+    /// Query restuarants
     /// </summary>
-    /// <returns>Collection of available restuarant records.  Returns empty array if there are no records</returns>
-    public Restuarant[] GetAllRestuarants()
+    /// <param name="queryParameters">Optional - Query parameters to filter restuarants</param>
+    /// <returns>Collection of available restuarant records.  Returns empty list if there are no records found matching criteria</returns>
+    public async Task<List<RestuarantBO>> QueryRestuarants(FilterQueryParametersBO queryParameters)
     {
-        //DataTable table = _sqlHelper.Select(DataAccessConstants.DefaultSchema, DataAccessConstants.GetAllRestuarants);
+        //FilterDefinition<RestuarantDocument> filter = ConfigureFilter(queryParameters);
 
-        //bool hasData = _sqlHelper.DateTableHasData(table);
-
-        //// if there is no data then return an empty list
-        //if (!hasData)
-        //{
-        //    return [];
-        //}
-
-        //return RestuarantMapper.MapRestuarantsAndLocation(table);
+        //_logger.LogInformation("Querying restuarants");
+        //var restuarants = await _mongo.GetManyAsync(_collection, filter);
+        //return [.. restuarants.Select(_ => _.ToRestuarant())];
         return [];
     }
 
     /// <summary>
-    /// Simple method for finding restuarants by name and type of cuisine.
-    /// This could be enhanced to include more criteria like location
+    /// Get restuarant by id
     /// </summary>
-    /// <param name="name">Search Parameter on the Restuarant Name</param>
-    /// <param name="cuisine">Search Parameter on the Restuarant CuisineType</param>
-    /// <returns>Collection of available restuarant records.  Returns empty array if there are no records found matching criteria</returns>
-    public Restuarant[] FindRestuarants(string name, string cuisine)
+    /// <param name="id">Id of the restuarant</param>
+    /// <returns>Restuarant if not <see langword="null"/></returns>
+    public async Task<RestuarantBO?> GetRestuarant(string id)
     {
-        //SqlParameter[] parameters =
-        //[
-        //    new("@Name", name),
-        //    new("@Cuisine", cuisine)
-        //];
-        //DataTable table = _sqlHelper.Select(DataAccessConstants.DefaultSchema, DataAccessConstants.FindRestuarants, parameters);
-
-        //bool hasData = _sqlHelper.DateTableHasData(table);
-
-        //// if there is no data then return an empty list
-        //if (!hasData)
-        //{
-        //    return [];
-        //}
-
-        //return RestuarantMapper.MapRestuarantsAndLocation(table);
-        return [];
+        _logger.LogInformation("Getting restuarant");
+        RestuarantEntity? entity = await _sqlRepo.GetAsync(id);
+        return entity?.ToRestuarantBO();
     }
 
     /// <summary>
-    /// Retrieves a restuarant record based on the matching id
+    /// Creates a new Restuarant
     /// </summary>
-    /// <param name="id">Unique Identifier for a restuarant</param>
-    /// <returns>Restuarant record if found.  Returns new Restuarant if not found</returns>
-    public Restuarant GetRestuarant(string id)
-    {
-        //SqlParameter[] parameters =
-        //[
-        //    new("@Id", id)
-        //];
-        //DataRow row = _sqlHelper.SelectOne(DataAccessConstants.DefaultSchema, DataAccessConstants.GetRestuarantById, parameters);
-
-        //bool hasData = _sqlHelper.DateRowHasData(row);
-
-        //// if there is no data then return an empty list
-        //if (!hasData)
-        //{
-        //    return new Restuarant();
-        //}
-
-        //return RestuarantMapper.MapRestuarantAndLocation(row);
-        return new Restuarant();
-    }
-
-    /// <summary>
-    /// Inserts a new Restuarant Record with Location
-    /// </summary>
-    /// <param name="restuarant">Restuarant object to insert</param>
-    /// <returns>id of the newly inserted restuarant</returns>
-    public int InsertRestuarant(Restuarant restuarant)
+    /// <param name="restuarant">Restuarant properties and data</param>
+    /// <returns>Restuarant object updated with the new id</returns>
+    public async Task<RestuarantBO> CreateRestuarant(RestuarantBO restuarant)
     {
         _logger.LogInformation("Adding new restuarant");
-
-        //SqlParameter[] parameters =
-        //[
-        //    new("@Name", restuarant.Name),
-        //    new("@Cuisine", restuarant.CuisineType),
-        //    new("@Website", restuarant.Website is null ? DBNull.Value : restuarant.Website.ToString()),
-        //    new("@Phone", restuarant.Phone),
-        //    new("@Street", restuarant.Address.Street),
-        //    new("@City", restuarant.Address.City),
-        //    new("@State", restuarant.Address.State),
-        //    new("@ZipCode", restuarant.Address.ZipCode),
-        //    new("@Country", restuarant.Address.Country)
-        //];
-        //int newRestuarantId = _sqlHelper.InsertOne(DataAccessConstants.DefaultSchema, DataAccessConstants.InsertRestuarant, parameters);
-
-        //return newRestuarantId;
-        return 0;
+        RestuarantEntity entity = await _sqlRepo.CreateAsync(restuarant.ToRestuarantEntity());
+        return entity.ToRestuarantBO();
     }
 
     /// <summary>
-    /// Inserts many new Restuarant Records
+    /// Create many new Restuarants
     /// </summary>
-    /// <param name="restuarants">Array of new restuarant objects to add</param>
-    /// <returns>Restuarant objects updated with the new id</returns>
-    public Restuarant[] InsertRestuarants(Restuarant[] restuarants)
+    /// <param name="restuarants">Collection of new restuarants</param>
+    /// <returns>MongoDb results for the transaction</returns>
+    public async Task<List<RestuarantBO>> CreateManyRestuarants(RestuarantBO[] restuarants)
     {
         _logger.LogInformation("Adding new restuarants");
-
-        //DataTable table = RestuarantMapper.MapRestuarantsToDataTable(restuarants);
-
-        //SqlParameter[] parameters =
-        //[
-        //    new()
-        //    {
-        //        ParameterName = "@NewRestuarants",
-        //        Direction = ParameterDirection.Input,
-        //        SqlDbType = SqlDbType.Structured,
-        //        TypeName = DataAccessConstants.RestuarantType,
-        //        Value = table
-        //    }
-        //];
-
-        ///*
-        // * For a simple bulk insert operation, the return would not be needed.
-        // * But, if needing the ids of the newly created objects, then there might need to be some creative
-        // * solutions to get those values.  The stored procedure in this case does that, but there might be a better way than what is demonstrated here
-        // */
-        //DataTable results = _sqlHelper.Select(DataAccessConstants.DefaultSchema, DataAccessConstants.GetAndInsertRestuarants, parameters);
-
-        //return RestuarantMapper.MapRestuarants(results);
-        return [];
+        RestuarantEntity[] entities = [.. restuarants.Select(_ => _.ToRestuarantEntity())];
+        var createdEntities = await _sqlRepo.CreateManyAsync(entities);
+        return [.. createdEntities.Select(_ => _.ToRestuarantBO())];
     }
 
     /// <summary>
-    /// Inserts many new Restuarant Address Records
+    /// Update an existing restuarant
     /// </summary>
-    /// <param name="restuarants">Array of new restuarant objects to add</param>
-    /// <returns>Number of address records inserted</returns>
-    public int InsertRestuarantAddresses(Restuarant[] restuarants)
+    /// <param name="id">Id of the restuarant</param>
+    /// <param name="request">Restuarant properties to update</param>
+    public async Task UpdateRestuarant(string id, UpdateRestuarantRequestBO request)
     {
-        _logger.LogInformation("Adding new restuarants");
+        _logger.LogInformation("Updating restuarant");
 
-        //DataTable table = RestuarantMapper.MapRestuarantAddressesToDataTable(restuarants);
+        RestuarantEntity? entity = await _sqlRepo.GetAsync(id);
+        if (entity is null)
+        {
+            return;
+        }
 
-        //SqlParameter[] parameters =
-        //[
-        //    new()
-        //    {
-        //        ParameterName = "@NewAddresses",
-        //        Direction = ParameterDirection.Input,
-        //        SqlDbType = SqlDbType.Structured,
-        //        TypeName = DataAccessConstants.RestuarantLocationType,
-        //        Value = table
-        //    }
-        //];
+        if (!string.IsNullOrWhiteSpace(request.Name))
+        {
+            entity.Name = request.Name;
+        }
 
-        ///*
-        // * For a simple bulk insert operation, the return would not be needed.
-        // * But, if needing the ids of the newly created objects, then there might need to be some creative
-        // * solutions to get those values.  The stored procedure in this case does that, but there might be a better way than what is demonstrated here
-        // */
-        //return _sqlHelper.Insert(DataAccessConstants.DefaultSchema, DataAccessConstants.InsertRestuarantAddresses, parameters);
-        return 0;
-    }
+        if (!string.IsNullOrWhiteSpace(request.CuisineType))
+        {
+            entity.CuisineType = request.CuisineType;
+        }
 
-    /// <summary>
-    /// Updates and existing restuarant record
-    /// </summary>
-    /// <param name="restuarant">Restuarant object to update</param>
-    /// <returns>int - number of rows affected</returns>
-    public int UpdateRestuarant(Restuarant restuarant)
-    {
-        _logger.LogInformation("replacing restuarant document");
-        //SqlParameter[] parameters =
-        //[
-        //    new("@Id", restuarant.Id),
-        //    new("@Name", restuarant.Name),
-        //    new("@Cuisine", restuarant.CuisineType),
-        //    new("@Website", restuarant.Website is null ? DBNull.Value : restuarant.Website.ToString()),
-        //    new("@Phone", restuarant.Phone),
-        //    new("@Street", restuarant.Address.Street),
-        //    new("@City", restuarant.Address.City),
-        //    new("@State", restuarant.Address.State),
-        //    new("@ZipCode", restuarant.Address.ZipCode),
-        //    new("@Country", restuarant.Address.Country),
-        //];
-        //return _sqlHelper.Update(DataAccessConstants.DefaultSchema, DataAccessConstants.UpdateRestuarant, parameters);
-        return 0;
+        if (request.Website is not null)
+        {
+            entity.Website = request.Website.ToString();
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Phone))
+        {
+            entity.Phone = request.Phone;
+        }
+
+        if (request.Address is not null)
+        {
+            if (!string.IsNullOrWhiteSpace(request.Address.Street))
+            {
+                entity.Street = request.Address.Street;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Address.City))
+            {
+                entity.City = request.Address.City;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Address.State))
+            {
+                entity.State = request.Address.State;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Address.Country))
+            {
+                entity.Country = request.Address.Country;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Address.ZipCode))
+            {
+                entity.ZipCode = request.Address.ZipCode;
+            }
+        }
+
+        await _sqlRepo.UpdateAsync(id, entity);
     }
 }

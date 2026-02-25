@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EFCore.MsSql.Shared.Models;
+namespace EFCore.MSSQL.API.Models;
 
-public record Restuarant
+public record CreateRestuarantRequest
 {
-    public int Id { get; set; }
-
     [Required]
+    [StringLength(50)]
     public string Name { get; set; } = string.Empty;
 
     [Required]
+    [StringLength(30)]
     public string CuisineType { get; set; } = string.Empty;
 
     public Uri? Website { get; set; }
@@ -17,5 +17,5 @@ public record Restuarant
     [Phone]
     public string Phone { get; set; } = string.Empty;
 
-    public Location Address { get; set; } = new Location();
+    public CreateLocationRequest Address { get; set; } = new();
 }

@@ -1,13 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EFCore.MsSql.Shared.Models;
+namespace EFCore.MSSQL.API.Models;
 
-public record Location
+public record CreateLocationRequest
 {
     [Required]
+    [StringLength(150)]
     public string Street { get; set; } = string.Empty;
 
     [Required]
+    [StringLength(100)]
     public string City { get; set; } = string.Empty;
 
     [Required]
@@ -15,6 +17,7 @@ public record Location
     public string State { get; set; } = string.Empty;
 
     [Required]
+    [StringLength(100)]
     public string Country { get; set; } = "United States";
 
     [Required]
