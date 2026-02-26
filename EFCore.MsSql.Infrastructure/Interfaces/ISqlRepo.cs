@@ -1,11 +1,10 @@
 ﻿using EFCore.MSSQL.Infrastructure.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace EFCore.MSSQL.Infrastructure.Interfaces;
 
 public interface ISqlRepo<TEntity> where TEntity : EntityBase
 {
-    DbSet<TEntity> DbSet { get; }
+    IQueryable<TEntity> QueryBase { get; }
 
     Task<TEntity> CreateAsync(TEntity entity);
 

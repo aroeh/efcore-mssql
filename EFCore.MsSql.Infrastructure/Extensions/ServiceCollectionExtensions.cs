@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
         {
             if (string.IsNullOrWhiteSpace(options.ConnectionString))
             {
-                throw new Exception("MongoDb Connection string is missing");
+                throw new Exception("SQL Connection string is missing");
             }
         }
 

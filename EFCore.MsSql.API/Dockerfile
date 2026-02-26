@@ -1,28 +1,28 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER app
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY ["EFCore.MsSql.API/EFCore.MsSql.API.csproj", "EFCore.MsSql.API/EFCore.MsSql.API/"]
-COPY ["EFCore.MsSql.Core/EFCore.MsSql.Core.csproj", "EFCore.MsSql.Core/EFCore.MsSql.Core/"]
-COPY ["EFCore.MsSql.Infrastructure/EFCore.MsSql.Infrastructure.csproj", "EFCore.MsSql.Infrastructure/EFCore.MsSql.Infrastructure/"]
-COPY ["EFCore.MsSql.Shared/EFCore.MsSql.Shared.csproj", "EFCore.MsSql.Shared/EFCore.MsSql.Shared/"]
+COPY ["EFCore.MSSQL.API/EFCore.MSSQL.API.csproj", "EFCore.MSSQL.API/EFCore.MSSQL.API/"]
+COPY ["EFCore.MSSQL.Core/EFCore.MSSQL.Core.csproj", "EFCore.MSSQL.Core/EFCore.MSSQL.Core/"]
+COPY ["EFCore.MSSQL.Infrastructure/EFCore.MSSQL.Infrastructure.csproj", "EFCore.MSSQL.Infrastructure/EFCore.MSSQL.Infrastructure/"]
+COPY ["EFCore.MSSQL.Shared/EFCore.MSSQL.Shared.csproj", "EFCore.MSSQL.Shared/EFCore.MSSQL.Shared/"]
 
-RUN dotnet restore "./EFCore.MsSql.API/EFCore.MsSql.API/EFCore.MsSql.API.csproj"
+RUN dotnet restore "./EFCore.MSSQL.API/EFCore.MSSQL.API/EFCore.MSSQL.API.csproj"
 
-COPY . EFCore.MsSql.API/
-WORKDIR "/src/EFCore.MsSql.API/EFCore.MsSql.API"
+COPY . EFCore.MSSQL.API/
+WORKDIR "/src/EFCore.MSSQL.API/EFCore.MSSQL.API"
 
-RUN dotnet build "./EFCore.MsSql.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./EFCore.MSSQL.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./EFCore.MsSql.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./EFCore.MSSQL.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "EFCore.MsSql.API.dll"]
+ENTRYPOINT ["dotnet", "EFCore.MSSQL.API.dll"]

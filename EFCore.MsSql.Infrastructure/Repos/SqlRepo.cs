@@ -10,7 +10,9 @@ public class SqlRepo<TEntity>
 ) : ISqlRepo<TEntity> where TEntity : EntityBase
 {
     private readonly RestuarantDbContext _dbContext = dbContext;
-    public DbSet<TEntity> DbSet { get; } = dbContext.Set<TEntity>();
+    private DbSet<TEntity> DbSet => _dbContext.Set<TEntity>();
+
+    public IQueryable<TEntity> QueryBase => _dbContext.Set<TEntity>();
 
     public async Task<TEntity> CreateAsync(TEntity entity)
     {
@@ -28,7 +30,7 @@ public class SqlRepo<TEntity>
 
     public async Task<IReadOnlyList<TEntity>> QueryAsync(IQueryable<TEntity> query)
     {
-        return await query.ToArrayAsync();
+        return await query.ToListAsync();
     }
 
     public async Task<IReadOnlyList<TEntity>> QueryAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? where = null)
@@ -40,7 +42,7 @@ public class SqlRepo<TEntity>
             query = where(query);
         }
 
-        return await query.AsNoTracking().ToArrayAsync();
+        return await query.AsNoTracking().ToListAsync();
     }
 
     public async Task<TEntity?> GetAsync(string id)

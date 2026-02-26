@@ -39,4 +39,11 @@ public interface IRestuarantRepo
     /// <param name="request">Restuarant properties to update</param>
     /// <returns>MongoDb results for the transaction</returns>
     Task UpdateRestuarant(string id, UpdateRestuarantRequestBO request);
+
+    /// <summary>
+    /// Removes a restuarant from the database
+    /// </summary>
+    /// <param name="id">Id of the restuarant</param>
+    /// <returns>MongoDb results for the transaction</returns>
+    Task RemoveRestuarant(string id);
 }

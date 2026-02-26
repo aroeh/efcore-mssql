@@ -16,18 +16,18 @@ services:
       - MSSQL_USER=sa
       - MSSQL_PID=Developer
 
-  # efcoreapi:
-  #   image: ${DOCKER_REGISTRY-}efcoredemo
-  #   container_name: efcore-api
-  #   networks:
-  #     - backend
-  #   build:
-  #     context: .
-  #     dockerfile: EFCore.MsSql.API/Dockerfile
-  #   ports:
-  #     - 5199:80
-  #   depends_on:
-  #     - mssql
-  #   environment:
-  #     - ASPNETCORE_URLS=http://+:80
-  #     - ASPNETCORE_ENVIRONMENT=Docker
+  efcoreapi:
+    image: ${DOCKER_REGISTRY-}efcoredemo
+    container_name: efcore-api
+    networks:
+      - backend
+    build:
+      context: .
+      dockerfile: EFCore.MsSql.API/Dockerfile
+    ports:
+      - 5199:80
+    depends_on:
+      - mssql
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_ENVIRONMENT=Docker

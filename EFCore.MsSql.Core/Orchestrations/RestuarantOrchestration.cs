@@ -81,4 +81,14 @@ public class RestuarantOrchestration(ILogger<RestuarantOrchestration> log, IRest
         _logger.LogInformation("Updating restuarant");
         await _repo.UpdateRestuarant(id, request);
     }
+
+    /// <summary>
+    /// Removes a Restuarant record
+    /// </summary>
+    /// <param name="id">Id of the restuarant</param>
+    public async Task RemoveRestuarant(string id)
+    {
+        _logger.LogInformation("Removing restuarant");
+        await _repo.RemoveRestuarant(id);
+    }
 }

@@ -80,13 +80,27 @@ public class RestuarantController(ILogger<RestuarantController> log, IRestuarant
     /// Update an existing restuarant
     /// </summary>
     /// <param name="id">Id of the Restuarant to update</param>
-    /// <param name="restuarant">Restuarant object to update</param>
+    /// <param name="request">Restuarant properties and data to update</param>
     /// <returns>Success result</returns>
     [HttpPatch("{id}")]
     public async Task<IResult> UpdateRestuarant([FromRoute] string id, [FromBody] UpdateRestuarantRequest request)
     {
         _logger.LogInformation("Update restuarant request received");
         await _orchestration.UpdateRestuarant(id, request.ToUpdateRestuarantRequestBO());
+
+        return TypedResults.Ok();
+    }
+
+    /// <summary>
+    /// Remove a restuarant
+    /// </summary>
+    /// <param name="id">Id of the Restuarant to update</param>
+    /// <returns>Success result</returns>
+    [HttpDelete("{id}")]
+    public async Task<IResult> RemoveRestuarant([FromRoute] string id)
+    {
+        _logger.LogInformation("Remove restuarant request received");
+        await _orchestration.RemoveRestuarant(id);
 
         return TypedResults.Ok();
     }

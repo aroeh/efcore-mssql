@@ -22,12 +22,20 @@ public class RestuarantRepo
     /// <returns>Collection of available restuarant records.  Returns empty list if there are no records found matching criteria</returns>
     public async Task<List<RestuarantBO>> QueryRestuarants(FilterQueryParametersBO queryParameters)
     {
-        //FilterDefinition<RestuarantDocument> filter = ConfigureFilter(queryParameters);
+        IQueryable<RestuarantEntity> query = _sqlRepo.QueryBase;
 
-        //_logger.LogInformation("Querying restuarants");
-        //var restuarants = await _mongo.GetManyAsync(_collection, filter);
-        //return [.. restuarants.Select(_ => _.ToRestuarant())];
-        return [];
+        if (queryParameters.Names?.Length > 0)
+        {
+            query = query.Where(r => queryParameters.Names.Any(n => r.Name.Contains(n)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(queryParameters.CuisineType))
+        {
+            query = query.Where(r => r.CuisineType.Equals(queryParameters.CuisineType));
+        }
+
+        var results = await _sqlRepo.QueryAsync(query);
+        return [.. results.Select(_ => _.ToRestuarantBO())];
     }
 
     /// <summary>
@@ -131,5 +139,14 @@ public class RestuarantRepo
         }
 
         await _sqlRepo.UpdateAsync(id, entity);
+    }
+
+    /// <summary>
+    /// Removes a restuarant from the database
+    /// </summary>
+    /// <param name="id">Id of the restuarant</param>
+    public async Task RemoveRestuarant(string id)
+    {
+        await _sqlRepo.RemoveAsync(id);
     }
 }
