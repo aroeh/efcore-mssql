@@ -14,6 +14,15 @@ public interface ISqlRepo<TEntity> where TEntity : EntityBase
 
     Task<IReadOnlyList<TEntity>> QueryAsync(IQueryable<TEntity> where);
 
+    /// <summary>
+    /// Query entities using filters and pagination parameters
+    /// </summary>
+    /// <param name="query">Query to filter entities</param>
+    /// <param name="page">Pagination query parameters</param>
+    /// <remarks>
+    /// Uses Offset pagination implementation
+    /// </remarks>
+    /// <returns>Paginated response for entities</returns>
     Task<PaginationResponse<TEntity>> QueryAsync(IQueryable<TEntity> query, PaginationQueryParametersBO page);
 
     Task<IReadOnlyList<TEntity>> QueryAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? where = null);

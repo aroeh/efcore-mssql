@@ -35,11 +35,21 @@ public class SqlRepo<TEntity>
         return await query.ToListAsync();
     }
 
+    /// <summary>
+    /// Query entities using filters and pagination parameters
+    /// </summary>
+    /// <param name="query">Query to filter entities</param>
+    /// <param name="page">Pagination query parameters</param>
+    /// <remarks>
+    /// Uses Offset pagination implementation
+    /// </remarks>
+    /// <returns>Paginated response for entities</returns>
     public async Task<PaginationResponse<TEntity>> QueryAsync(IQueryable<TEntity> query, PaginationQueryParametersBO page)
     {
         var totalCount = await DbSet.CountAsync();
         var position = page.Page == 1 ? 0 : (page.Page - 1) * page.PageSize;
 
+        // demonstrates Offset pagination
         var results = await query
             .OrderBy(q => q.Id)
             .Skip(position)
