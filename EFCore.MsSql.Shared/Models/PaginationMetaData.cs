@@ -5,13 +5,16 @@ public record PaginationMetaData
     int CurrentPage,
     int PageRecordCount,
     int PageSize,
-    int TotalRecords
+    long TotalRecords
 )
 {
-    public int TotalPages => CalculateTotalPages(TotalRecords);
+    public PaginationMetaData(int currentPage, int pageRecordCount, int pageSize, int totalRecords) : this(currentPage, pageRecordCount, pageSize, (long)totalRecords)
+    { }
 
-    private int CalculateTotalPages(int totalRecords)
+    public int TotalPages => CalculateTotalPages((decimal)TotalRecords, (decimal)PageSize);
+
+    private static int CalculateTotalPages(decimal totalRecords, decimal pageSize)
     {
-        return (int)Math.Ceiling((decimal)totalRecords/PageSize);
+        return (int)Math.Ceiling(totalRecords / pageSize);
     }
 }
