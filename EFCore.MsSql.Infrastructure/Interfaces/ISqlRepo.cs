@@ -1,4 +1,5 @@
 ﻿using EFCore.MSSQL.Infrastructure.Entities;
+using EFCore.MSSQL.Shared.Models;
 
 namespace EFCore.MSSQL.Infrastructure.Interfaces;
 
@@ -12,6 +13,8 @@ public interface ISqlRepo<TEntity> where TEntity : EntityBase
 
 
     Task<IReadOnlyList<TEntity>> QueryAsync(IQueryable<TEntity> where);
+
+    Task<PaginationResponse<TEntity>> QueryAsync(IQueryable<TEntity> query, PaginationQueryParametersBO page);
 
     Task<IReadOnlyList<TEntity>> QueryAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? where = null);
 

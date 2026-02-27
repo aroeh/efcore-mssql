@@ -2,7 +2,7 @@
 
 namespace EFCore.MSSQL.API.Models;
 
-public record FilterQueryParameters
+public record FilterQueryParameters : PaginationQueryParameters
 {
     [FromQuery(Name = "name")]
     public string[]? Names { get; init; } = default!;

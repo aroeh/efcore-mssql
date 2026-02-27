@@ -20,7 +20,7 @@ public class RestuarantRepo
     /// </summary>
     /// <param name="queryParameters">Optional - Query parameters to filter restuarants</param>
     /// <returns>Collection of available restuarant records.  Returns empty list if there are no records found matching criteria</returns>
-    public async Task<List<RestuarantBO>> QueryRestuarants(FilterQueryParametersBO queryParameters)
+    public async Task<PaginationResponse<RestuarantBO>> QueryRestuarants(FilterQueryParametersBO queryParameters)
     {
         IQueryable<RestuarantEntity> query = _sqlRepo.QueryBase;
 
@@ -34,8 +34,8 @@ public class RestuarantRepo
             query = query.Where(r => r.CuisineType.Equals(queryParameters.CuisineType));
         }
 
-        var results = await _sqlRepo.QueryAsync(query);
-        return [.. results.Select(_ => _.ToRestuarantBO())];
+        var results = await _sqlRepo.QueryAsync(query, queryParameters);
+        return new PaginationResponse<RestuarantBO>([.. results.Data.Select(_ => _.ToRestuarantBO())], results.MetaData);
     }
 
     /// <summary>

@@ -1,5 +1,7 @@
-﻿using EFCore.MSSQL.Infrastructure.Entities;
+﻿using Azure;
+using EFCore.MSSQL.Infrastructure.Entities;
 using EFCore.MSSQL.Infrastructure.Interfaces;
+using EFCore.MSSQL.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCore.MSSQL.Infrastructure.Repos;
@@ -33,9 +35,23 @@ public class SqlRepo<TEntity>
         return await query.ToListAsync();
     }
 
+    public async Task<PaginationResponse<TEntity>> QueryAsync(IQueryable<TEntity> query, PaginationQueryParametersBO page)
+    {
+        var totalCount = await DbSet.CountAsync();
+        var position = page.Page == 1 ? 0 : (page.Page - 1) * page.PageSize;
+
+        var results = await query
+            .OrderBy(q => q.Id)
+            .Skip(position)
+            .Take(page.PageSize)
+            .ToListAsync();
+        PaginationMetaData metaData = new(page.Page, results.Count, page.PageSize, totalCount);
+        return new PaginationResponse<TEntity>(results, metaData);
+    }
+
     public async Task<IReadOnlyList<TEntity>> QueryAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? where = null)
     {
-        IQueryable<TEntity> query = DbSet;
+        IQueryable<TEntity> query = QueryBase;
 
         if (where is not null)
         {
@@ -47,7 +63,7 @@ public class SqlRepo<TEntity>
 
     public async Task<TEntity?> GetAsync(string id)
     {
-        IQueryable<TEntity> query = DbSet;
+        IQueryable<TEntity> query = QueryBase;
 
         query = query.Where(_ => _.Id.Equals(id));
 
@@ -56,7 +72,7 @@ public class SqlRepo<TEntity>
 
     public async Task<TEntity?> GetAsync(string id, Func<IQueryable<TEntity>, IQueryable<TEntity>>? where = null)
     {
-        IQueryable<TEntity> query = DbSet;
+        IQueryable<TEntity> query = QueryBase;
 
         query = query.Where(_ => _.Id.Equals(id));
 

@@ -23,7 +23,7 @@ public class RestuarantController(ILogger<RestuarantController> log, IRestuarant
     public async Task<IResult> ListRestuarants([FromQuery] FilterQueryParameters queryParameters)
     {
         _logger.LogInformation("Find restuarants request received");
-        List<RestuarantBO> restuarants = await _orchestration.ListRestuarants(queryParameters.ToFilterQueryParametersBO());
+        PaginationResponse<RestuarantBO> restuarants = await _orchestration.ListRestuarants(queryParameters.ToFilterQueryParametersBO());
 
         return TypedResults.Ok(restuarants);
     }
