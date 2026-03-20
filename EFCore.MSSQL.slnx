@@ -5,6 +5,7 @@
     <Build />
     <Deploy />
   </Project>
+  <Project Path="EfCore.MSSQL.DbUp.Migration/EfCore.MSSQL.DbUp.Migration.csproj" Id="d4acb449-1cc4-4d24-97eb-70b7964f68fc" />
   <Project Path="EFCore.MSSQL.Infrastructure/EFCore.MSSQL.Infrastructure.csproj" />
   <Project Path="EFCore.MSSQL.Shared/EFCore.MSSQL.Shared.csproj" />
 </Solution>

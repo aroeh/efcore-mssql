@@ -1,5 +1,4 @@
-﻿using Azure;
-using EFCore.MSSQL.Infrastructure.Entities;
+﻿using EFCore.MSSQL.Infrastructure.Entities;
 using EFCore.MSSQL.Infrastructure.Interfaces;
 using EFCore.MSSQL.Shared.Models;
 using Microsoft.EntityFrameworkCore;
