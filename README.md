@@ -68,6 +68,8 @@ Project EfCore.MSSQL.DbUp.Migration uses the DbUp libraries to run sql migration
 It has a check to ensure that the database will be created before running any scripts.
 Scripts have been grouped by run order to ensure that dependent scripts are run last.
 
+> NOTE** by default DbUp runs scripts in alphabetical order.  This is also true for any scripts in grouped and ordered paths
+
 1. Select the `Development` profile for the project
 
 2. Run the console app

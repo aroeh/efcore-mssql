@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: EFCore.MsSql.API/Dockerfile
     ports:
-      - 5199:80
+      - 5017:80
     depends_on:
       - mssql
     environment:

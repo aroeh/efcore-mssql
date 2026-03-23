@@ -26,7 +26,12 @@ internal class Program
 
         EnsureDatabase.For.SqlDatabase(sqlOptions.ConnectionString);
 
-        // Setting a ScriptType of RunAlways will prevent the scripts from being logged in the Journal table
+        /*
+            Scripts in the Run Group Ordered paths will still be run in alphabetical order.  In other words
+            The scripts in the Tables directory will be run first and the scripts in that directory will be run in alphabetical order
+
+            **Setting a ScriptType of RunAlways will prevent the scripts from being logged in the Journal table
+        */
         var upgrader = DeployChanges.To
             .SqlDatabase(sqlOptions.ConnectionString)
             .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), script => script.Contains("Tables"), new SqlScriptOptions() { RunGroupOrder = 1 })

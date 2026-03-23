@@ -23,6 +23,20 @@ public class RestuarantEntityConfiguration : IEntityTypeConfiguration<Restuarant
     public void Configure(EntityTypeBuilder<RestuarantEntity> builder)
     {
         builder.ToTable("Restuarant");
+
+        // TODO: Any way to move this to a base class?
         builder.HasKey(x => x.Id);
+        builder.Property(_ => _.Id).IsRequired().HasMaxLength(50);
+
+        builder.Property(_ => _.Name).IsRequired().HasMaxLength(50);
+        builder.Property(_ => _.CuisineType).IsRequired().HasMaxLength(30);
+        builder.Property(_ => _.Website).HasMaxLength(100);
+        builder.Property(_ => _.Phone).HasMaxLength(20);
+
+        builder.Property(_ => _.Street).IsRequired().HasMaxLength(150);
+        builder.Property(_ => _.City).IsRequired().HasMaxLength(100);
+        builder.Property(_ => _.State).IsRequired().HasMaxLength(2);
+        builder.Property(_ => _.Country).IsRequired().HasMaxLength(100);
+        builder.Property(_ => _.ZipCode).IsRequired().HasMaxLength(10);
     }
 }
