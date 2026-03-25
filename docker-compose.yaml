@@ -16,14 +16,14 @@ services:
       - MSSQL_USER=sa
       - MSSQL_PID=Developer
 
-  efcoreapi:
-    image: ${DOCKER_REGISTRY-}efcoredemo
-    container_name: efcore-api
+  restuarantapi:
+    image: ${DOCKER_REGISTRY-}restuarantdemoapi
+    container_name: restuarant-api
     networks:
       - backend
     build:
-      context: .
-      dockerfile: EFCore.MsSql.API/Dockerfile
+      context: . # context at the root is the path containing the compose file
+      dockerfile: Demo.Restuarants.API/Dockerfile
     ports:
       - 5017:80
     depends_on:
