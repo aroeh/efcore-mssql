@@ -29,21 +29,21 @@ public interface IRestuarantRepo
     /// Create many new Restuarants
     /// </summary>
     /// <param name="restuarants">Collection of new restuarants</param>
-    /// <returns>Collection of created restuarant objects</returns>
-    Task<List<RestuarantBO>> CreateManyRestuarants(RestuarantBO[] restuarants);
+    /// <returns>Results for the transaction</returns>
+    Task<TransactionResult> CreateManyRestuarants(RestuarantBO[] restuarants);
 
     /// <summary>
     /// Update an existing restuarant
     /// </summary>
     /// <param name="id">Id of the restuarant</param>
     /// <param name="request">Restuarant properties to update</param>
-    /// <returns>MongoDb results for the transaction</returns>
-    Task UpdateRestuarant(string id, UpdateRestuarantRequestBO request);
+    /// <returns>Results for the transaction</returns>
+    Task<TransactionResult> UpdateRestuarant(string id, UpdateRestuarantRequestBO request);
 
     /// <summary>
     /// Removes a restuarant from the database
     /// </summary>
     /// <param name="id">Id of the restuarant</param>
-    /// <returns>MongoDb results for the transaction</returns>
-    Task RemoveRestuarant(string id);
+    /// <returns>Results for the transaction</returns>
+    Task<TransactionResult> RemoveRestuarant(string id);
 }

@@ -52,8 +52,8 @@ public class RestuarantOrchestration(ILogger<RestuarantOrchestration> log, IRest
     /// Create many new Restuarants
     /// </summary>
     /// <param name="requests">Collection of create restuarant requests</param>
-    /// <returns>MongoDb results for the transaction</returns>
-    public async Task<bool> CreateManyRestuarants(CreateRestuarantRequestBO[] requests)
+    /// <returns>Results for the transaction</returns>
+    public async Task<TransactionResult> CreateManyRestuarants(CreateRestuarantRequestBO[] requests)
     {
         RestuarantBO[] requestCollection = new RestuarantBO[requests.Length];
         for (int i = 0; i < requests.Length; i++)
@@ -64,8 +64,7 @@ public class RestuarantOrchestration(ILogger<RestuarantOrchestration> log, IRest
         }
 
         _logger.LogInformation("Adding new restuarants");
-        var createdEntities = await _repo.CreateManyRestuarants(requestCollection);
-        return createdEntities.Count > 0 && createdEntities.Count == requestCollection.Length;
+        return await _repo.CreateManyRestuarants(requestCollection);
     }
 
     /// <summary>
@@ -74,21 +73,24 @@ public class RestuarantOrchestration(ILogger<RestuarantOrchestration> log, IRest
     /// <param name="id">Id of the restuarant</param>
     /// <param name="request">Restuarant properties to update</param>
     /// <returns>Success result</returns>
-    public async Task UpdateRestuarant(string id, UpdateRestuarantRequestBO request)
+    public async Task<bool> UpdateRestuarant(string id, UpdateRestuarantRequestBO request)
     {
         _ = await GetRestuarant(id) ?? throw new Exception("Restuarant does not exist.  Unable to update.");
 
         _logger.LogInformation("Updating restuarant");
-        await _repo.UpdateRestuarant(id, request);
+        TransactionResult result = await _repo.UpdateRestuarant(id, request);
+        return result.Success;
     }
 
     /// <summary>
     /// Removes a Restuarant record
     /// </summary>
     /// <param name="id">Id of the restuarant</param>
-    public async Task RemoveRestuarant(string id)
+    /// <returns>Success result</returns>
+    public async Task<bool> RemoveRestuarant(string id)
     {
         _logger.LogInformation("Removing restuarant");
-        await _repo.RemoveRestuarant(id);
+        TransactionResult result = await _repo.RemoveRestuarant(id);
+        return result.Success;
     }
 }

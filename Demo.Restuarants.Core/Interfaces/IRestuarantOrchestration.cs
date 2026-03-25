@@ -30,7 +30,7 @@ public interface IRestuarantOrchestration
     /// </summary>
     /// <param name="requests">Collection of create restuarant requests</param>
     /// <returns>Results for the transaction</returns>
-    Task<bool> CreateManyRestuarants(CreateRestuarantRequestBO[] requests);
+    Task<TransactionResult> CreateManyRestuarants(CreateRestuarantRequestBO[] requests);
 
     /// <summary>
     /// Updates a Restuarant record
@@ -38,11 +38,12 @@ public interface IRestuarantOrchestration
     /// <param name="id">Id of the restuarant</param>
     /// <param name="request">Restuarant properties to update</param>
     /// <returns>Success result</returns>
-    Task UpdateRestuarant(string id, UpdateRestuarantRequestBO request);
+    Task<bool> UpdateRestuarant(string id, UpdateRestuarantRequestBO request);
 
     /// <summary>
     /// Removes a Restuarant record
     /// </summary>
     /// <param name="id">Id of the restuarant</param>
-    Task RemoveRestuarant(string id);
+    /// <returns>Success result</returns>
+    Task<bool> RemoveRestuarant(string id);
 }

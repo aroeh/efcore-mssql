@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="Demo.Restuarants.API.Models/Demo.Restuarants.API.Models.csproj" />
   <Project Path="Demo.Restuarants.API/Demo.Restuarants.API.csproj" />
   <Project Path="Demo.Restuarants.Core/Demo.Restuarants.Core.csproj" />
   <Project Path="Demo.Restuarants.Database/Demo.Restuarants.Database.sqlproj" Id="874aae74-d2fb-495c-b6d1-6a50abfdcceb">

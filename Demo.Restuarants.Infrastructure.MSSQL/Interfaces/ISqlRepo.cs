@@ -9,7 +9,7 @@ public interface ISqlRepo<TEntity> where TEntity : EntityBase
 
     Task<TEntity> CreateAsync(TEntity entity);
 
-    Task<IReadOnlyList<TEntity>> CreateManyAsync(IEnumerable<TEntity> entities);
+    Task<TransactionResult> CreateManyAsync(IEnumerable<TEntity> entities);
 
 
     Task<IReadOnlyList<TEntity>> QueryAsync(IQueryable<TEntity> where);
@@ -37,15 +37,15 @@ public interface ISqlRepo<TEntity> where TEntity : EntityBase
     /// <param name="id"></param>
     /// <param name="updateFunction"></param>
     /// <returns></returns>
-    Task<TEntity?> UpdateAsync(string id, Func<TEntity, bool> updateFunction);
+    Task<TransactionResult> UpdateAsync(string id, Func<TEntity, bool> updateFunction);
 
-    Task<TEntity?> UpdateAsync(string id, TEntity updateEntity);
+    Task<TransactionResult> UpdateAsync(string id, TEntity updateEntity);
 
-    Task UpdateManyAsync(IEnumerable<TEntity> entities);
+    Task<TransactionResult> UpdateManyAsync(IEnumerable<TEntity> entities);
 
-    Task RemoveAsync(string id);
+    Task<TransactionResult> RemoveAsync(string id);
 
-    Task RemoveManyAsync(string[] ids);
+    Task<TransactionResult> RemoveManyAsync(string[] ids);
 
-    Task SaveAsync();
+    Task<int> SaveAsync();
 }

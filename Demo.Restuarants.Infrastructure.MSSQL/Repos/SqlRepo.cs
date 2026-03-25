@@ -1,10 +1,9 @@
 ﻿using Demo.Restuarants.Infrastructure.MSSQL.Entities;
 using Demo.Restuarants.Infrastructure.MSSQL.Interfaces;
-using Demo.Restuarants.Infrastructure.MSSQL.Repos;
 using Demo.Restuarants.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace EFCore.MSSQL.Infrastructure.Repos;
+namespace Demo.Restuarants.Infrastructure.MSSQL.Repos;
 
 public class SqlRepo<TEntity>
 (
@@ -23,11 +22,11 @@ public class SqlRepo<TEntity>
         return entity;
     }
 
-    public async Task<IReadOnlyList<TEntity>> CreateManyAsync(IEnumerable<TEntity> entities)
+    public async Task<TransactionResult> CreateManyAsync(IEnumerable<TEntity> entities)
     {
         await DbSet.AddRangeAsync(entities);
-        await SaveAsync();
-        return [.. entities];
+        var stateChanges = await SaveAsync();
+        return new TransactionResult(true, true, entities.Count(), stateChanges);
     }
 
     public async Task<IReadOnlyList<TEntity>> QueryAsync(IQueryable<TEntity> query)
@@ -94,66 +93,69 @@ public class SqlRepo<TEntity>
         return await query.SingleOrDefaultAsync();
     }
 
-    public async Task<TEntity?> UpdateAsync(string id, Func<TEntity, bool> updateFunction)
+    public async Task<TransactionResult> UpdateAsync(string id, Func<TEntity, bool> updateFunction)
     {
         TEntity? entity = await GetAsync(id);
 
         if (entity is null || !updateFunction(entity))
         {
-            return null;
+            return new TransactionResult(1);
         }
 
-        await SaveAsync();
-        return entity;
+        var stateChanges = await SaveAsync();
+        return new TransactionResult(true, true, 1, stateChanges);
     }
 
-    public async Task<TEntity?> UpdateAsync(string id, TEntity updateEntity)
+    public async Task<TransactionResult> UpdateAsync(string id, TEntity updateEntity)
     {
         DbSet.Update(updateEntity);
-        await SaveAsync();
-        return updateEntity;
+        var stateChanges = await SaveAsync();
+        return new TransactionResult(true, true, 1, stateChanges);
     }
 
-    public async Task UpdateManyAsync(IEnumerable<TEntity> entities)
+    public async Task<TransactionResult> UpdateManyAsync(IEnumerable<TEntity> entities)
     {
         if (entities is null || !entities.Any())
         {
-            return;
+            return new TransactionResult(entities?.Count() ?? 0);
         }
 
         DbSet.UpdateRange(entities);
-        await SaveAsync();
+        var stateChanges = await SaveAsync();
+        return new TransactionResult(true, true, entities.Count(), stateChanges);
     }
 
-    public async Task RemoveAsync(string id)
+    public async Task<TransactionResult> RemoveAsync(string id)
     {
         TEntity? entity = await GetAsync(id);
         if (entity is null)
         {
-            return;
+            return new TransactionResult(1);
         }
 
         DbSet.Remove(entity);
-        await SaveAsync();
+        var stateChanges = await SaveAsync();
+        return new TransactionResult(true, true, 1, stateChanges);
     }
 
-    public async Task RemoveManyAsync(string[] ids)
+    public async Task<TransactionResult> RemoveManyAsync(string[] ids)
     {
         List<TEntity>? entities = await DbSet.Where(e => ids.Contains(e.Id)).ToListAsync();
         if (entities is null || entities.Count == 0)
         {
-            return;
+            return new TransactionResult(ids.Length);
         }
 
         DbSet.RemoveRange(entities);
-        await SaveAsync();
+        var stateChanges = await SaveAsync();
+        return new TransactionResult(true, true, ids.Length, stateChanges);
     }
 
-    public async Task SaveAsync()
+    public async Task<int> SaveAsync()
     {
         try
         {
-            await _dbContext.SaveChangesAsync();
+            return await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {

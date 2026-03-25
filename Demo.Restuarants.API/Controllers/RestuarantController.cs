@@ -1,4 +1,5 @@
-﻿using Demo.Restuarants.API.Extensions;
+﻿using Asp.Versioning;
+using Demo.Restuarants.API.Extensions;
 using Demo.Restuarants.API.Models;
 using Demo.Restuarants.Core.Interfaces;
 using Demo.Restuarants.Shared.Models;
@@ -6,10 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Restuarants.API.Controllers;
 
-[ApiController]
-[Produces("application/json")]
+[ApiVersion(ApiVersions.Latest)]
 [Route("api/[controller]")]
-public class RestuarantController(ILogger<RestuarantController> log, IRestuarantOrchestration orchestration) : ControllerBase
+public class RestuarantController
+(
+    ILogger<RestuarantController> log,
+    IRestuarantOrchestration orchestration
+) : ApiControllerBase<RestuarantController>(log)
 {
     private readonly ILogger<RestuarantController> _logger = log;
     private readonly IRestuarantOrchestration _orchestration = orchestration;
@@ -18,7 +22,7 @@ public class RestuarantController(ILogger<RestuarantController> log, IRestuarant
     /// List restuarants
     /// </summary>
     /// <param name="queryParameters">Optional - Query parameters to filter restuarants</param>
-    /// <returns>List of restuarants matching <paramref name="queryParameters"/></returns>
+    /// <returns>Paginated list of restuarants matching <paramref name="queryParameters"/></returns>
     [HttpGet]
     public async Task<IResult> ListRestuarants([FromQuery] FilterQueryParameters queryParameters)
     {
@@ -80,15 +84,15 @@ public class RestuarantController(ILogger<RestuarantController> log, IRestuarant
     /// Update an existing restuarant
     /// </summary>
     /// <param name="id">Id of the Restuarant to update</param>
-    /// <param name="request">Restuarant properties and data to update</param>
+    /// <param name="restuarant">Restuarant object to update</param>
     /// <returns>Success result</returns>
     [HttpPatch("{id}")]
     public async Task<IResult> UpdateRestuarant([FromRoute] string id, [FromBody] UpdateRestuarantRequest request)
     {
         _logger.LogInformation("Update restuarant request received");
-        await _orchestration.UpdateRestuarant(id, request.ToUpdateRestuarantRequestBO());
+        bool success = await _orchestration.UpdateRestuarant(id, request.ToUpdateRestuarantRequestBO());
 
-        return TypedResults.Ok();
+        return TypedResults.Ok(success);
     }
 
     /// <summary>
@@ -100,8 +104,8 @@ public class RestuarantController(ILogger<RestuarantController> log, IRestuarant
     public async Task<IResult> RemoveRestuarant([FromRoute] string id)
     {
         _logger.LogInformation("Remove restuarant request received");
-        await _orchestration.RemoveRestuarant(id);
+        bool success = await _orchestration.RemoveRestuarant(id);
 
-        return TypedResults.Ok();
+        return TypedResults.Ok(success);
     }
 }

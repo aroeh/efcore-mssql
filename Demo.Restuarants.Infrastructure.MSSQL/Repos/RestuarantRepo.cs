@@ -66,13 +66,12 @@ public class RestuarantRepo
     /// Create many new Restuarants
     /// </summary>
     /// <param name="restuarants">Collection of new restuarants</param>
-    /// <returns>MongoDb results for the transaction</returns>
-    public async Task<List<RestuarantBO>> CreateManyRestuarants(RestuarantBO[] restuarants)
+    /// <returns>Results for the transaction</returns>
+    public async Task<TransactionResult> CreateManyRestuarants(RestuarantBO[] restuarants)
     {
         _logger.LogInformation("Adding new restuarants");
         RestuarantEntity[] entities = [.. restuarants.Select(_ => _.ToRestuarantEntity())];
-        var createdEntities = await _sqlRepo.CreateManyAsync(entities);
-        return [.. createdEntities.Select(_ => _.ToRestuarantBO())];
+        return await _sqlRepo.CreateManyAsync(entities);
     }
 
     /// <summary>
@@ -80,14 +79,15 @@ public class RestuarantRepo
     /// </summary>
     /// <param name="id">Id of the restuarant</param>
     /// <param name="request">Restuarant properties to update</param>
-    public async Task UpdateRestuarant(string id, UpdateRestuarantRequestBO request)
+    /// <returns>Results for the transaction</returns>
+    public async Task<TransactionResult> UpdateRestuarant(string id, UpdateRestuarantRequestBO request)
     {
         _logger.LogInformation("Updating restuarant");
 
         RestuarantEntity? entity = await _sqlRepo.GetAsync(id);
         if (entity is null)
         {
-            return;
+            return new TransactionResult();
         }
 
         if (!string.IsNullOrWhiteSpace(request.Name))
@@ -138,15 +138,16 @@ public class RestuarantRepo
             }
         }
 
-        await _sqlRepo.UpdateAsync(id, entity);
+        return await _sqlRepo.UpdateAsync(id, entity);
     }
 
     /// <summary>
     /// Removes a restuarant from the database
     /// </summary>
     /// <param name="id">Id of the restuarant</param>
-    public async Task RemoveRestuarant(string id)
+    /// <returns>Results for the transaction</returns>
+    public async Task<TransactionResult> RemoveRestuarant(string id)
     {
-        await _sqlRepo.RemoveAsync(id);
+        return await _sqlRepo.RemoveAsync(id);
     }
 }

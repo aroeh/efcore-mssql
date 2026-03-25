@@ -2,7 +2,6 @@
 using Demo.Restuarants.Infrastructure.MSSQL.Interfaces;
 using Demo.Restuarants.Infrastructure.MSSQL.Options;
 using Demo.Restuarants.Infrastructure.MSSQL.Repos;
-using EFCore.MSSQL.Infrastructure.Repos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
