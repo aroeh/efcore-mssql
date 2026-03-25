@@ -1,5 +1,0 @@
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
-USER app
-WORKDIR /app
-COPY EFCore.MSSQL.API/publish .
-ENTRYPOINT ["dotnet", "EFCore.MSSQL.API.dll"]

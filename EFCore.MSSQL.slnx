@@ -1,11 +1,11 @@
 <Solution>
-  <Project Path="EFCore.MSSQL.API/EFCore.MSSQL.API.csproj" />
-  <Project Path="EFCore.MSSQL.Core/EFCore.MSSQL.Core.csproj" />
-  <Project Path="EfCore.MSSQL.Database.Restuarant/EfCore.MSSQL.Database.Restuarant.sqlproj" Id="874aae74-d2fb-495c-b6d1-6a50abfdcceb">
+  <Project Path="Demo.Restuarants.API/Demo.Restuarants.API.csproj" />
+  <Project Path="Demo.Restuarants.Core/Demo.Restuarants.Core.csproj" />
+  <Project Path="Demo.Restuarants.Database/Demo.Restuarants.Database.sqlproj" Id="874aae74-d2fb-495c-b6d1-6a50abfdcceb">
     <Build />
     <Deploy />
   </Project>
-  <Project Path="EfCore.MSSQL.DbUp.Migration/EfCore.MSSQL.DbUp.Migration.csproj" Id="d4acb449-1cc4-4d24-97eb-70b7964f68fc" />
-  <Project Path="EFCore.MSSQL.Infrastructure/EFCore.MSSQL.Infrastructure.csproj" />
-  <Project Path="EFCore.MSSQL.Shared/EFCore.MSSQL.Shared.csproj" />
+  <Project Path="Demo.Restuarants.DbUp.Migration/Demo.Restuarants.DbUp.Migration.csproj" />
+  <Project Path="Demo.Restuarants.Infrastructure.MSSQL/Demo.Restuarants.Infrastructure.MSSQL.csproj" />
+  <Project Path="Demo.Restuarants.Shared/Demo.Restuarants.Shared.csproj" />
 </Solution>
