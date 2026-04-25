@@ -15,23 +15,23 @@ public class SqlRepo<TEntity>
 
     public IQueryable<TEntity> QueryBase => _dbContext.Set<TEntity>();
 
-    public async Task<TEntity> CreateAsync(TEntity entity)
+    public async Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        await DbSet.AddAsync(entity);
-        await SaveAsync();
+        await DbSet.AddAsync(entity, cancellationToken);
+        await SaveAsync(cancellationToken);
         return entity;
     }
 
-    public async Task<TransactionResult> CreateManyAsync(IEnumerable<TEntity> entities)
+    public async Task<TransactionResult> CreateManyAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
     {
-        await DbSet.AddRangeAsync(entities);
-        var stateChanges = await SaveAsync();
+        await DbSet.AddRangeAsync(entities, cancellationToken);
+        var stateChanges = await SaveAsync(cancellationToken);
         return new TransactionResult(true, true, entities.Count(), stateChanges);
     }
 
-    public async Task<IReadOnlyList<TEntity>> QueryAsync(IQueryable<TEntity> query)
+    public async Task<IReadOnlyList<TEntity>> QueryAsync(IQueryable<TEntity> query, CancellationToken cancellationToken)
     {
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken);
     }
 
     /// <summary>
@@ -43,9 +43,9 @@ public class SqlRepo<TEntity>
     /// Uses Offset pagination implementation
     /// </remarks>
     /// <returns>Paginated response for entities</returns>
-    public async Task<PaginationResponse<TEntity>> QueryAsync(IQueryable<TEntity> query, PaginationQueryParametersBO page)
+    public async Task<PaginationResponse<TEntity>> QueryAsync(IQueryable<TEntity> query, PaginationQueryParametersBO page, CancellationToken cancellationToken)
     {
-        var totalCount = await DbSet.CountAsync();
+        var totalCount = await DbSet.CountAsync(cancellationToken);
         var position = page.Page == 1 ? 0 : (page.Page - 1) * page.PageSize;
 
         // demonstrates Offset pagination
@@ -53,12 +53,12 @@ public class SqlRepo<TEntity>
             .OrderBy(q => q.Id)
             .Skip(position)
             .Take(page.PageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         PaginationMetaData metaData = new(page.Page, results.Count, page.PageSize, totalCount);
         return new PaginationResponse<TEntity>(results, metaData);
     }
 
-    public async Task<IReadOnlyList<TEntity>> QueryAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? where = null)
+    public async Task<IReadOnlyList<TEntity>> QueryAsync(CancellationToken cancellationToken, Func<IQueryable<TEntity>, IQueryable<TEntity>>? where = null)
     {
         IQueryable<TEntity> query = QueryBase;
 
@@ -67,19 +67,21 @@ public class SqlRepo<TEntity>
             query = where(query);
         }
 
-        return await query.AsNoTracking().ToListAsync();
+        return await query
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<TEntity?> GetAsync(string id)
+    public async Task<TEntity?> GetAsync(string id, CancellationToken cancellationToken)
     {
         IQueryable<TEntity> query = QueryBase;
 
         query = query.Where(_ => _.Id.Equals(id));
 
-        return await query.SingleOrDefaultAsync();
+        return await query.SingleOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<TEntity?> GetAsync(string id, Func<IQueryable<TEntity>, IQueryable<TEntity>>? where = null)
+    public async Task<TEntity?> GetAsync(string id, CancellationToken cancellationToken, Func<IQueryable<TEntity>, IQueryable<TEntity>>? where = null)
     {
         IQueryable<TEntity> query = QueryBase;
 
@@ -90,30 +92,30 @@ public class SqlRepo<TEntity>
             query = where(query);
         }
 
-        return await query.SingleOrDefaultAsync();
+        return await query.SingleOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<TransactionResult> UpdateAsync(string id, Func<TEntity, bool> updateFunction)
+    public async Task<TransactionResult> UpdateAsync(string id, CancellationToken cancellationToken, Func<TEntity, bool> updateFunction)
     {
-        TEntity? entity = await GetAsync(id);
+        TEntity? entity = await GetAsync(id, cancellationToken);
 
         if (entity is null || !updateFunction(entity))
         {
             return new TransactionResult(1);
         }
 
-        var stateChanges = await SaveAsync();
+        var stateChanges = await SaveAsync(cancellationToken);
         return new TransactionResult(true, true, 1, stateChanges);
     }
 
-    public async Task<TransactionResult> UpdateAsync(string id, TEntity updateEntity)
+    public async Task<TransactionResult> UpdateAsync(string id, TEntity updateEntity, CancellationToken cancellationToken)
     {
         DbSet.Update(updateEntity);
-        var stateChanges = await SaveAsync();
+        var stateChanges = await SaveAsync(cancellationToken);
         return new TransactionResult(true, true, 1, stateChanges);
     }
 
-    public async Task<TransactionResult> UpdateManyAsync(IEnumerable<TEntity> entities)
+    public async Task<TransactionResult> UpdateManyAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
     {
         if (entities is null || !entities.Any())
         {
@@ -121,41 +123,41 @@ public class SqlRepo<TEntity>
         }
 
         DbSet.UpdateRange(entities);
-        var stateChanges = await SaveAsync();
+        var stateChanges = await SaveAsync(cancellationToken);
         return new TransactionResult(true, true, entities.Count(), stateChanges);
     }
 
-    public async Task<TransactionResult> RemoveAsync(string id)
+    public async Task<TransactionResult> RemoveAsync(string id, CancellationToken cancellationToken)
     {
-        TEntity? entity = await GetAsync(id);
+        TEntity? entity = await GetAsync(id, cancellationToken);
         if (entity is null)
         {
             return new TransactionResult(1);
         }
 
         DbSet.Remove(entity);
-        var stateChanges = await SaveAsync();
+        var stateChanges = await SaveAsync(cancellationToken);
         return new TransactionResult(true, true, 1, stateChanges);
     }
 
-    public async Task<TransactionResult> RemoveManyAsync(string[] ids)
+    public async Task<TransactionResult> RemoveManyAsync(string[] ids, CancellationToken cancellationToken)
     {
-        List<TEntity>? entities = await DbSet.Where(e => ids.Contains(e.Id)).ToListAsync();
+        List<TEntity>? entities = await DbSet.Where(e => ids.Contains(e.Id)).ToListAsync(cancellationToken);
         if (entities is null || entities.Count == 0)
         {
             return new TransactionResult(ids.Length);
         }
 
         DbSet.RemoveRange(entities);
-        var stateChanges = await SaveAsync();
+        var stateChanges = await SaveAsync(cancellationToken);
         return new TransactionResult(true, true, ids.Length, stateChanges);
     }
 
-    public async Task<int> SaveAsync()
+    public async Task<int> SaveAsync(CancellationToken cancellationToken)
     {
         try
         {
-            return await _dbContext.SaveChangesAsync();
+            return await _dbContext.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
         {

@@ -19,8 +19,9 @@ public class RestuarantRepo
     /// Query restuarants
     /// </summary>
     /// <param name="queryParameters">Optional - Query parameters to filter restuarants</param>
+    /// <param name="cancellationToken">Token for handling cancellation requests</param>
     /// <returns>Collection of available restuarant records.  Returns empty list if there are no records found matching criteria</returns>
-    public async Task<PaginationResponse<RestuarantBO>> QueryRestuarants(FilterQueryParametersBO queryParameters)
+    public async Task<PaginationResponse<RestuarantBO>> QueryRestuarants(FilterQueryParametersBO queryParameters, CancellationToken cancellationToken)
     {
         IQueryable<RestuarantEntity> query = _sqlRepo.QueryBase;
 
@@ -34,7 +35,7 @@ public class RestuarantRepo
             query = query.Where(r => r.CuisineType.Equals(queryParameters.CuisineType));
         }
 
-        var results = await _sqlRepo.QueryAsync(query, queryParameters);
+        var results = await _sqlRepo.QueryAsync(query, queryParameters, cancellationToken);
         return new PaginationResponse<RestuarantBO>([.. results.Data.Select(_ => _.ToRestuarantBO())], results.MetaData);
     }
 
@@ -42,11 +43,12 @@ public class RestuarantRepo
     /// Get restuarant by id
     /// </summary>
     /// <param name="id">Id of the restuarant</param>
+    /// <param name="cancellationToken">Token for handling cancellation requests</param>
     /// <returns>Restuarant if not <see langword="null"/></returns>
-    public async Task<RestuarantBO?> GetRestuarant(string id)
+    public async Task<RestuarantBO?> GetRestuarant(string id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Getting restuarant");
-        RestuarantEntity? entity = await _sqlRepo.GetAsync(id);
+        RestuarantEntity? entity = await _sqlRepo.GetAsync(id, cancellationToken);
         return entity?.ToRestuarantBO();
     }
 
@@ -54,11 +56,12 @@ public class RestuarantRepo
     /// Creates a new Restuarant
     /// </summary>
     /// <param name="restuarant">Restuarant properties and data</param>
+    /// <param name="cancellationToken">Token for handling cancellation requests</param>
     /// <returns>Restuarant object updated with the new id</returns>
-    public async Task<RestuarantBO> CreateRestuarant(RestuarantBO restuarant)
+    public async Task<RestuarantBO> CreateRestuarant(RestuarantBO restuarant, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Adding new restuarant");
-        RestuarantEntity entity = await _sqlRepo.CreateAsync(restuarant.ToRestuarantEntity());
+        RestuarantEntity entity = await _sqlRepo.CreateAsync(restuarant.ToRestuarantEntity(), cancellationToken);
         return entity.ToRestuarantBO();
     }
 
@@ -66,12 +69,13 @@ public class RestuarantRepo
     /// Create many new Restuarants
     /// </summary>
     /// <param name="restuarants">Collection of new restuarants</param>
+    /// <param name="cancellationToken">Token for handling cancellation requests</param>
     /// <returns>Results for the transaction</returns>
-    public async Task<TransactionResult> CreateManyRestuarants(RestuarantBO[] restuarants)
+    public async Task<TransactionResult> CreateManyRestuarants(RestuarantBO[] restuarants, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Adding new restuarants");
         RestuarantEntity[] entities = [.. restuarants.Select(_ => _.ToRestuarantEntity())];
-        return await _sqlRepo.CreateManyAsync(entities);
+        return await _sqlRepo.CreateManyAsync(entities, cancellationToken);
     }
 
     /// <summary>
@@ -79,12 +83,13 @@ public class RestuarantRepo
     /// </summary>
     /// <param name="id">Id of the restuarant</param>
     /// <param name="request">Restuarant properties to update</param>
+    /// <param name="cancellationToken">Token for handling cancellation requests</param>
     /// <returns>Results for the transaction</returns>
-    public async Task<TransactionResult> UpdateRestuarant(string id, UpdateRestuarantRequestBO request)
+    public async Task<TransactionResult> UpdateRestuarant(string id, UpdateRestuarantRequestBO request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Updating restuarant");
 
-        RestuarantEntity? entity = await _sqlRepo.GetAsync(id);
+        RestuarantEntity? entity = await _sqlRepo.GetAsync(id, cancellationToken);
         if (entity is null)
         {
             return new TransactionResult();
@@ -138,16 +143,17 @@ public class RestuarantRepo
             }
         }
 
-        return await _sqlRepo.UpdateAsync(id, entity);
+        return await _sqlRepo.UpdateAsync(id, entity, cancellationToken);
     }
 
     /// <summary>
     /// Removes a restuarant from the database
     /// </summary>
     /// <param name="id">Id of the restuarant</param>
+    /// <param name="cancellationToken">Token for handling cancellation requests</param>
     /// <returns>Results for the transaction</returns>
-    public async Task<TransactionResult> RemoveRestuarant(string id)
+    public async Task<TransactionResult> RemoveRestuarant(string id, CancellationToken cancellationToken)
     {
-        return await _sqlRepo.RemoveAsync(id);
+        return await _sqlRepo.RemoveAsync(id, cancellationToken);
     }
 }
