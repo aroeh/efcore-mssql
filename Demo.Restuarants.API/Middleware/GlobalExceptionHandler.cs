@@ -37,7 +37,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         return true;
     }
 
-    private ProblemDetails SetProblemDetails(HttpContext httpContext, Exception exception)
+    private static ProblemDetails SetProblemDetails(HttpContext httpContext, Exception exception)
     {
         ProblemDetails problemDetails = new()
         {
@@ -52,12 +52,6 @@ public class GlobalExceptionHandler : IExceptionHandler
         else
         {
             GetExceptionInformation(problemDetails, exception);
-        }
-
-        // we can customize by environment if needed for additional debugging
-        if (isDevelopment)
-        {
-            //problemDetails.Extensions["data"] = exception.Data;
         }
 
         return problemDetails;

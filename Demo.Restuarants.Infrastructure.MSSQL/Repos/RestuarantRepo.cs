@@ -93,7 +93,7 @@ public class RestuarantRepo
         RestuarantEntity? entity = await _sqlRepo.GetAsync(id, cancellationToken);
         if (entity is null)
         {
-            return new TransactionResult(DataBaseConstants.Updated);
+            return new TransactionResult(DatabaseConstants.Updated);
         }
 
         if (!string.IsNullOrWhiteSpace(request.Name))
