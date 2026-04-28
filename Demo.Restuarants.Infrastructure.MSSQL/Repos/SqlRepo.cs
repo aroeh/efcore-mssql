@@ -1,4 +1,5 @@
-﻿using Demo.Restuarants.Infrastructure.MSSQL.Entities;
+﻿using Demo.Restuarants.Infrastructure.MSSQL.Constants;
+using Demo.Restuarants.Infrastructure.MSSQL.Entities;
 using Demo.Restuarants.Infrastructure.MSSQL.Interfaces;
 using Demo.Restuarants.Shared.Models;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,7 @@ public class SqlRepo<TEntity>
     {
         await DbSet.AddRangeAsync(entities, cancellationToken);
         var stateChanges = await SaveAsync(cancellationToken);
-        return new TransactionResult(true, true, entities.Count(), stateChanges);
+        return new TransactionResult(true, true, entities.Count(), stateChanges, DataBaseConstants.Created);
     }
 
     public async Task<IReadOnlyList<TEntity>> QueryAsync(IQueryable<TEntity> query, CancellationToken cancellationToken)
@@ -101,30 +102,29 @@ public class SqlRepo<TEntity>
 
         if (entity is null || !updateFunction(entity))
         {
-            return new TransactionResult(1);
+            return new TransactionResult(1, DataBaseConstants.Updated);
         }
 
         var stateChanges = await SaveAsync(cancellationToken);
-        return new TransactionResult(true, true, 1, stateChanges);
+        return new TransactionResult(1, stateChanges, DataBaseConstants.Updated);
     }
 
     public async Task<TransactionResult> UpdateAsync(string id, TEntity updateEntity, CancellationToken cancellationToken)
     {
-        DbSet.Update(updateEntity);
         var stateChanges = await SaveAsync(cancellationToken);
-        return new TransactionResult(true, true, 1, stateChanges);
+        return new TransactionResult(1, stateChanges, DataBaseConstants.Updated);
     }
 
     public async Task<TransactionResult> UpdateManyAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
     {
         if (entities is null || !entities.Any())
         {
-            return new TransactionResult(entities?.Count() ?? 0);
+            return new TransactionResult(entities?.Count() ?? 0, DataBaseConstants.Updated);
         }
 
         DbSet.UpdateRange(entities);
         var stateChanges = await SaveAsync(cancellationToken);
-        return new TransactionResult(true, true, entities.Count(), stateChanges);
+        return new TransactionResult(entities.Count(), stateChanges, DataBaseConstants.Updated);
     }
 
     public async Task<TransactionResult> RemoveAsync(string id, CancellationToken cancellationToken)
@@ -132,12 +132,12 @@ public class SqlRepo<TEntity>
         TEntity? entity = await GetAsync(id, cancellationToken);
         if (entity is null)
         {
-            return new TransactionResult(1);
+            return new TransactionResult(1, DataBaseConstants.Deleted);
         }
 
         DbSet.Remove(entity);
         var stateChanges = await SaveAsync(cancellationToken);
-        return new TransactionResult(true, true, 1, stateChanges);
+        return new TransactionResult(1, stateChanges, DataBaseConstants.Deleted);
     }
 
     public async Task<TransactionResult> RemoveManyAsync(string[] ids, CancellationToken cancellationToken)
@@ -145,12 +145,12 @@ public class SqlRepo<TEntity>
         List<TEntity>? entities = await DbSet.Where(e => ids.Contains(e.Id)).ToListAsync(cancellationToken);
         if (entities is null || entities.Count == 0)
         {
-            return new TransactionResult(ids.Length);
+            return new TransactionResult(ids.Length, DataBaseConstants.Deleted);
         }
 
         DbSet.RemoveRange(entities);
         var stateChanges = await SaveAsync(cancellationToken);
-        return new TransactionResult(true, true, ids.Length, stateChanges);
+        return new TransactionResult(ids.Length, stateChanges, DataBaseConstants.Deleted);
     }
 
     public async Task<int> SaveAsync(CancellationToken cancellationToken)

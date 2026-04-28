@@ -1,4 +1,5 @@
-﻿using Demo.Restuarants.Infrastructure.MSSQL.Entities;
+﻿using Demo.Restuarants.Infrastructure.MSSQL.Constants;
+using Demo.Restuarants.Infrastructure.MSSQL.Entities;
 using Demo.Restuarants.Infrastructure.MSSQL.Extensions;
 using Demo.Restuarants.Infrastructure.MSSQL.Interfaces;
 using Demo.Restuarants.Shared.Models;
@@ -70,7 +71,7 @@ public class RestuarantRepo
     /// </summary>
     /// <param name="restuarants">Collection of new restuarants</param>
     /// <param name="cancellationToken">Token for handling cancellation requests</param>
-    /// <returns>Results for the transaction</returns>
+    /// <returns>Create results for the transaction</returns>
     public async Task<TransactionResult> CreateManyRestuarantsAsync(RestuarantBO[] restuarants, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Adding new restuarants");
@@ -92,7 +93,7 @@ public class RestuarantRepo
         RestuarantEntity? entity = await _sqlRepo.GetAsync(id, cancellationToken);
         if (entity is null)
         {
-            return new TransactionResult();
+            return new TransactionResult(DataBaseConstants.Updated);
         }
 
         if (!string.IsNullOrWhiteSpace(request.Name))
