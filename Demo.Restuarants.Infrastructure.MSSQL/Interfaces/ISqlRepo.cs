@@ -1,9 +1,11 @@
 ﻿using Demo.Restuarants.Infrastructure.MSSQL.Entities;
 using Demo.Restuarants.Shared.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Demo.Restuarants.Infrastructure.MSSQL.Interfaces;
 
-public interface ISqlRepo<TEntity> where TEntity : EntityBase
+//public interface ISqlRepo<TEntity> where TEntity : EntityBase
+public interface ISqlRepo<TContext, TEntity> where TContext : DbContext where TEntity : EntityBase
 {
     IQueryable<TEntity> QueryBase { get; }
 

@@ -9,13 +9,13 @@ namespace Demo.Restuarants.API.Controllers;
 
 [ApiVersion(ApiVersions.Latest)]
 [Route("api/[controller]")]
-public class RestuarantController
+public class RestuarantsController
 (
-    ILogger<RestuarantController> log,
+    ILogger<RestuarantsController> log,
     IRestuarantOrchestration orchestration
-) : ApiControllerBase<RestuarantController>(log)
+) : ApiControllerBase<RestuarantsController>(log)
 {
-    private readonly ILogger<RestuarantController> _logger = log;
+    private readonly ILogger<RestuarantsController> _logger = log;
     private readonly IRestuarantOrchestration _orchestration = orchestration;
 
     /// <summary>

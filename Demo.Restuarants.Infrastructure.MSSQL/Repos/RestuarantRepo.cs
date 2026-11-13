@@ -10,11 +10,11 @@ namespace Demo.Restuarants.Infrastructure.MSSQL.Repos;
 public class RestuarantRepo
 (
     ILogger<RestuarantRepo> log,
-    ISqlRepo<RestuarantEntity> sqlRepo
+    ISqlRepo<RestuarantDbContext, RestuarantEntity> sqlRepo
 ) : IRestuarantRepo
 {
     private readonly ILogger<RestuarantRepo> _logger = log;
-    private readonly ISqlRepo<RestuarantEntity> _sqlRepo = sqlRepo;
+    private readonly ISqlRepo<RestuarantDbContext, RestuarantEntity> _sqlRepo = sqlRepo;
 
     /// <summary>
     /// Query restuarants

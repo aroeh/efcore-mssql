@@ -6,12 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Demo.Restuarants.Infrastructure.MSSQL.Repos;
 
-public class SqlRepo<TEntity>
+//public class SqlRepo<TEntity>
+//(
+//    RestuarantDbContext dbContext
+//) : ISqlRepo<TEntity> where TEntity : EntityBase
+public class SqlRepo<TContext, TEntity>
 (
-    RestuarantDbContext dbContext
-) : ISqlRepo<TEntity> where TEntity : EntityBase
+    TContext dbContext
+) : ISqlRepo<TContext, TEntity> where TContext : DbContext where TEntity : EntityBase
 {
-    private readonly RestuarantDbContext _dbContext = dbContext;
+    private readonly TContext _dbContext = dbContext;
     private DbSet<TEntity> DbSet => _dbContext.Set<TEntity>();
 
     public IQueryable<TEntity> QueryBase => _dbContext.Set<TEntity>();
@@ -96,6 +100,14 @@ public class SqlRepo<TEntity>
         return await query.SingleOrDefaultAsync(cancellationToken);
     }
 
+    /*
+     * for researching the function
+     * https://learn.microsoft.com/en-us/dotnet/api/system.func-1?view=net-10.0
+     * https://medium.com/@anuragramteke/pass-method-as-parameter-in-c-af01b71ff365
+     * https://stackoverflow.com/questions/2082615/pass-method-as-parameter-using-c-sharp
+     * 
+     * in Func<TEntity, bool> TEntity is the input to the function, and bool is the output of the function
+     */
     public async Task<TransactionResult> UpdateAsync(string id, CancellationToken cancellationToken, Func<TEntity, bool> updateFunction)
     {
         TEntity? entity = await GetAsync(id, cancellationToken);

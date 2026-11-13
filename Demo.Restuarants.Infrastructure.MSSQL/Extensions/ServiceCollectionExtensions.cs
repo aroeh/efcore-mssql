@@ -18,7 +18,8 @@ public static class ServiceCollectionExtensions
             options => options.UseSqlServer(sqlOptions.ConnectionString)
         );
 
-        services.AddScoped<ISqlRepo<RestuarantEntity>, SqlRepo<RestuarantEntity>>();
+        //services.AddScoped<ISqlRepo<RestuarantEntity>, SqlRepo<RestuarantEntity>>();
+        services.AddScopedSqlRepo<RestuarantDbContext, RestuarantEntity>();
         services.AddScoped<IRestuarantRepo, RestuarantRepo>();
 
         return services;
@@ -38,8 +39,13 @@ public static class ServiceCollectionExtensions
             }
         }
 
-        services.Configure<SqlOptions>(configSettings);
+        //services.Configure<SqlOptions>(configSettings);
 
         return options!;
+    }
+
+    private static void AddScopedSqlRepo<TContext, TEntity>(this IServiceCollection services) where TContext : DbContext where TEntity : EntityBase
+    {
+        services.AddScoped<ISqlRepo<TContext, TEntity>, SqlRepo<TContext, TEntity>>();
     }
 }
